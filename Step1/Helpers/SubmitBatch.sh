@@ -56,6 +56,7 @@ while read line; do
     # Make the settings xml file
     source ${THIS_DIR}/GetSettings.sh post $file $ID ${OUTPUT_DIR}/Scripts/SettingsPost-${ID}.xml 
 
+    echo "#!/bin/bash" > ${OUTPUT_DIR}/Scripts/SubmitJobPost-${ID}.sh
     echo "source ${THIS_DIR}/SubmitJob.sh ${OUTPUT_DIR}/Scripts/SettingsPost-${ID}.xml $events ${OUTPUT_DIR} ${SETUP} ${BINARY}" > ${OUTPUT_DIR}/Scripts/SubmitJobPost-${ID}.sh
 done < $2
 
