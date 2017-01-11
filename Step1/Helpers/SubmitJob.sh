@@ -11,12 +11,12 @@ if [ $# -ne 5 ]; then
     return 0
 fi
 
-# Move to the output directory
-cd $3
-
 # Source the setup script
 source $4
 
+# Run Pandora
 $5 -i $1 -d uboone -n $2 -N
 
+# Move output to the correct directory
+mv HitData_* $3/.
 

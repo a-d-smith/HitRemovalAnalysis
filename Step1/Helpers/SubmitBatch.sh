@@ -18,12 +18,15 @@ if [ $# -ne 5 ]; then
 fi
 
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+OUTPUT_DIR=`readlink -f $3`
+SETUP=`readlink -f $4`
+BINARY=`readlink -f $5`
 
 # Remove the scripts in the Scripts folder
-if [ ! -d $3/Scripts ]; then
-    mkdir $3/Scripts
+if [ ! -d ${OUTPUT_DIR}/Scripts ]; then
+    mkdir ${OUTPUT_DIR}/Scripts
 fi
-rm -f $3/Scripts/*
+rm -f ${OUTPUT_DIR}/Scripts/*
 
 # Add submission of the pre files
 while read line; do
@@ -35,9 +38,10 @@ while read line; do
     ID=${ID##*-}
 
     # Make the settings xml file
-    source ${THIS_DIR}/GetSettings.sh pre $file $ID $3/Scripts/SettingsPre-${ID}.xml 
+    source ${THIS_DIR}/GetSettings.sh pre $file $ID ${OUTPUT_DIR}/Scripts/SettingsPre-${ID}.xml 
 
-    echo "source ${THIS_DIR}/SubmitJob.sh $3/Scripts/SettingsPre-${ID}.xml $events $3 $4 $5" > $3/Scripts/SubmitJobPre-${ID}.sh
+    echo "#!/bin/bash" > ${OUTPUT_DIR}/Scripts/SubmitJobPre-${ID}.sh
+    echo "source ${THIS_DIR}/SubmitJob.sh ${OUTPUT_DIR}/Scripts/SettingsPre-${ID}.xml $events ${OUTPUT_DIR} ${SETUP} ${BINARY}" >> ${OUTPUT_DIR}/Scripts/SubmitJobPre-${ID}.sh
 done < $1
 
 # Add submission of the post files
@@ -50,11 +54,22 @@ while read line; do
     ID=${ID##*-}
 
     # Make the settings xml file
-    source ${THIS_DIR}/GetSettings.sh post $file $ID $3/Scripts/SettingsPost-${ID}.xml 
+    source ${THIS_DIR}/GetSettings.sh post $file $ID ${OUTPUT_DIR}/Scripts/SettingsPost-${ID}.xml 
 
-    echo "source ${THIS_DIR}/SubmitJob.sh $3/Scripts/SettingsPost-${ID}.xml $events $3 $4 $5" > $3/Scripts/SubmitJobPost-${ID}.sh
+    echo "source ${THIS_DIR}/SubmitJob.sh ${OUTPUT_DIR}/Scripts/SettingsPost-${ID}.xml $events ${OUTPUT_DIR} ${SETUP} ${BINARY}" > ${OUTPUT_DIR}/Scripts/SubmitJobPost-${ID}.sh
 done < $2
 
-echo "Executable   = \$(filename)" > $3/Scripts/JobSubmitter
-echo "queue filename matching files *.sh" >> $3/Scripts/JobSubmitter
+echo "executable     = \$(filename)" > ${OUTPUT_DIR}/Scripts/JobSubmitter
+echo "log            = \$(filename).log" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
+echo "requirements   = (OSTYPE == \"SLC6\") && (LoadAvg < 0.5)" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
+echo "request_memory = 1024" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
+echo "rank           = memory" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
+echo "universe       = vanilla" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
+echo "input          = /dev/null" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
+echo "queue filename matching files *.sh" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
+
+PWD_DIR=`pwd`
+cd ${OUTPUT_DIR}/Scripts
+condor_submit JobSubmitter
+cd $PWD_DIR
 
