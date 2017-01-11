@@ -33,8 +33,8 @@ else
 fi
 
 # Modify the input file name
-sed -i 's/INPUT_FILE_NAME/'$2'/g' $4
-sed -i 's/FILE_ID/'$3'/g' $4
+sed -i 's|INPUT_FILE_NAME|'$2'|g' $4
+sed -i 's|FILE_ID|'$3'|g' $4
 
 
 
