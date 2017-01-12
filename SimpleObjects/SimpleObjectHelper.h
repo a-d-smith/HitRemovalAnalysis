@@ -1,4 +1,4 @@
-#include "SimpleObjectsMod.h"
+#include "SimpleObjects.h"
 
 bool IsGhostHit(SimpleCaloHit &hit, SimpleMCEvent &event){
     return (hit.GetMCParticleId().GetUid() == -1);

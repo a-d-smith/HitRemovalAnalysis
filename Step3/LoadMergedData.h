@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "../SimpleObjects/SimpleObjectsMod.h"
+#include "../SimpleObjects/SimpleObjects.h"
 
 int min(int a, int b){
     return ((a < b) ? a : b);
@@ -53,7 +53,7 @@ void ReadNextHit(TChain *const pTChain, const unsigned int iEntry, std::vector<S
     // Check if this event already exists
     bool eventExists = false;
     int  eventIndex;
-    for (int i=0; i<mcEventList.size(); i++){
+    for (unsigned int i=0; i<mcEventList.size(); i++){
         SimpleMCEvent &event = mcEventList[i];
         if (event.GetFileId() == fileId && event.GetEventId() == eventId) {
             eventExists = true;
@@ -103,7 +103,7 @@ void ReadNextPfo(TChain *const pTChain, const unsigned int iEntry, std::vector<S
     // Check if this event already exists
     bool eventExists = false;
     int  eventIndex;
-    for (int i=0; i<mcEventList.size(); i++){
+    for (unsigned int i=0; i<mcEventList.size(); i++){
         SimpleMCEvent &event = mcEventList[i];
         if (event.GetFileId() == fileId && event.GetEventId() == eventId) {
             eventExists = true;
@@ -119,7 +119,7 @@ void ReadNextPfo(TChain *const pTChain, const unsigned int iEntry, std::vector<S
     SimpleMCEvent &thisEvent = mcEventList[eventIndex];
 
     std::vector<Identifier> hitList;
-    for (int i=0; i<hitUidList->size(); i++){
+    for (unsigned int i=0; i<hitUidList->size(); i++){
         hitList.push_back(Identifier(fileId, eventId, hitUidList->at(i)));
     } 
 
@@ -165,7 +165,7 @@ void ReadNextMCParticle(TChain *const pTChain, const unsigned int iEntry, std::v
     // Check if this event already exists
     bool eventExists = false;
     int  eventIndex;
-    for (int i=0; i<mcEventList.size(); i++){
+    for (unsigned int i=0; i<mcEventList.size(); i++){
         SimpleMCEvent &event = mcEventList[i];
         if (event.GetFileId() == fileId && event.GetEventId() == eventId) {
             eventExists = true;
@@ -181,7 +181,7 @@ void ReadNextMCParticle(TChain *const pTChain, const unsigned int iEntry, std::v
     SimpleMCEvent &thisEvent = mcEventList[eventIndex];
 
     std::vector<Identifier> hitList;
-    for (int i=0; i<hitUidList->size(); i++){
+    for (unsigned int i=0; i<hitUidList->size(); i++){
         hitList.push_back(Identifier(fileId, eventId, hitUidList->at(i)));
     } 
 

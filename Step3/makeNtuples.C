@@ -2,7 +2,8 @@
 #include <iomanip>
 #include <numeric>
 
-#include "../SimpleObjectHelper.h"
+#include "../SimpleObjects/SimpleObjects.h"
+#include "../SimpleObjects/SimpleObjectHelper.h"
 
 void makeNtuples(const char *filePath){
     // Load the data
@@ -26,7 +27,6 @@ void makeNtuples(const char *filePath){
 
 
     for (SimpleMCEvent &event : eventList){
-        std::cout << "File " << event.GetFileId() << ", Event " << event.GetEventId() << std::endl;
         // ------------------------------------------------------------------
         int nNeutrinoHits = 0;
         int nGhostHits    = 0;
