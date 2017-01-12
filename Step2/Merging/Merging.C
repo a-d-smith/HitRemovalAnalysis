@@ -9,7 +9,7 @@
 #include "MergingIO.h"
 #include "Merging.h"
 
-void Merge(const std::string &preRegex, const std::string &postRegex, const std::string outputFileName, int nGoodEvents){
+void Merge(const std::string &preRegex, const std::string &postRegex, const std::string outputFileName, int nGoodEvents = std::numeric_limits<int>::max()){
     // Load in the chains for Hits, MCparticles and Pfos pre and post hit removal
     // --------------------------------------------------------------------------------------
     TChain *chainHitPre = new TChain("HitDataHit", "chainHitPre");
@@ -18,17 +18,20 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
     TChain *chainPfoPre = new TChain("HitDataPfoPrimary", "chainPfoPre");
     chainPfoPre->Add(preRegex.c_str());
 
+    /*
     TChain *chainMCParticlePre = new TChain("HitDataMCParticle", "chainMCParticlePre");
     chainMCParticlePre->Add(preRegex.c_str());
+    */
 
     // --
 
     TChain *chainHitPost = new TChain("HitDataHit", "chainHitPost");
     chainHitPost->Add(postRegex.c_str());
 
+    /*
     TChain *chainMCParticlePost = new TChain("HitDataMCParticle", "chainMCParticlePost");
     chainMCParticlePost->Add(postRegex.c_str());
-
+    */
 
     // Open the output file 
     TFile *f = new TFile(outputFileName.c_str(), "RECREATE");
@@ -37,7 +40,7 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
     }
     TTree *treeHit   = new TTree("HitDataHit", "HitDataHit");
     TTree *treePfo   = new TTree("HitDataPfo", "HitDataPfo");
-    TTree *treePart  = new TTree("HitDataMCParticle", "HitDataMCParticle");
+    //TTree *treePart  = new TTree("HitDataMCParticle", "HitDataMCParticle");
     
     // Set up the branch
     int hitFileId, hitEventId, hitUid, hitParticleUid, hitPfoUid;
@@ -66,6 +69,7 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
     treePfo->Branch("FractionRemoved", &pfoFractionRemoved);
     treePfo->Branch("HitList"        , &pfoHitList);
 
+    /*
     int partFileId, partEventId, partUid, partPdg;
     bool partIsNeutrinoInduced;
     double partStartX, partStartY, partStartZ, partEndX, partEndY, partEndZ;
@@ -82,6 +86,7 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
     treePart->Branch("EndY"             , &partEndY);
     treePart->Branch("EndZ"             , &partEndZ);
     treePart->Branch("HitList"          , &partHitList);
+    */
 
     // Find the first nGoodEvents events which contain neutrino hits
     std::cout << "Reading ... " << std::endl;
@@ -97,8 +102,7 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
     std::cout << std::endl;
 
     if (n < nGoodEvents){
-        std::cout << "Error: The input files only contain " << n << " good events" << std::endl;
-        exit(1);
+        std::cout << "Warning: The input files only contain " << n << " good events. " << nGoodEvents << " were requested." << std::endl;
     }
 
 
@@ -120,6 +124,7 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
     }
     std::cout << std::endl;
 
+    /*
     std::cout <<   "  |------------------------------|";
     std::cout << "\r  | Reading Pre MCParticles " << std::endl;
     for (int i=0; i<chainMCParticlePre->GetEntries(); i++) {
@@ -127,6 +132,7 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
         showLoadingBar(i+1, chainMCParticlePre->GetEntries(), 30);
     }
     std::cout << std::endl;
+    */
 
     // Read in the data post hit removal
     std::vector<SimpleMCEvent> postEventList;
@@ -174,6 +180,7 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
 
             treeHit->Fill();
         }
+
         // Pfos
         for (SimplePfo &pfo : event.GetPfoList()){
             pfoFileId          = pfo.GetId().GetFileId();
@@ -189,7 +196,9 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
 
             treePfo->Fill();
         }
+        
         // MCParticles
+        /*
         for (SimpleMCParticle &part : event.GetMCParticleList()){
             partFileId            = part.GetId().GetFileId();
             partEventId           = part.GetId().GetEventId();
@@ -209,7 +218,7 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
             }
 
             treePart->Fill();
-        }
+        }*/
     }
 
     // Close the file
