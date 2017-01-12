@@ -138,6 +138,7 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
     }
     std::cout << std::endl;
 
+    /*
     std::cout <<   "  |------------------------------|";
     std::cout << "\r  | Reading Post MCParticles " << std::endl;
     for (int i=0; i<chainMCParticlePost->GetEntries(); i++) { 
@@ -145,6 +146,7 @@ void Merge(const std::string &preRegex, const std::string &postRegex, const std:
         showLoadingBar(i+1, chainMCParticlePost->GetEntries(), 30);
     }
     std::cout << std::endl;
+    */
 
     // Merge the information pre and post hit removal
     std::cout << "Merging ..." << std::endl;

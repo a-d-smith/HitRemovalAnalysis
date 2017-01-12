@@ -101,7 +101,6 @@ void ReadNextHit(TChain *const pTChain, const unsigned int iEntry, std::vector<S
 
     int viewInt;
     pTChain->SetBranchAddress("View", &viewInt);
-    std::cout << "viewInt = " << viewInt << std::endl;
     char view;
     switch (viewInt){
         case 0:
@@ -319,6 +318,7 @@ void MergeEvents(std::vector<SimpleMCEvent> &preEventList, std::vector<SimpleMCE
     unsigned int totalAssociatedHits = 0;
     unsigned int totalPfos           = 0;
     unsigned int totalAmbiguousPfos  = 0;
+    double       summedPurity        = 0;
 
     // For each event
     for (unsigned int i=0; i<preEventList.size(); i++){
@@ -380,6 +380,7 @@ void MergeEvents(std::vector<SimpleMCEvent> &preEventList, std::vector<SimpleMCE
                 // So a semi-removal should be due to unassociated hits
                 pfoIsRemoved = false;
                 totalAmbiguousPfos++;
+                summedPurity += ((double) nRemaining)/((double) pfo.GetHitList().size());
             }
         
             totalPfos++;
@@ -409,6 +410,7 @@ void MergeEvents(std::vector<SimpleMCEvent> &preEventList, std::vector<SimpleMCE
     std::cout << "    Total unnasociated : " << (totalPostHits - totalAssociatedHits) << "  (" << ((100 * ((double) totalPostHits - (double) totalAssociatedHits)) / ((double) totalPostHits) )<< "%)" << std::endl;
     std::cout << "  Total pfos           : " << totalPfos     << std::endl;
     std::cout << "    Total ambigious    : " << totalAmbiguousPfos << "  (" << (100 * ((double) totalAmbiguousPfos / (double) totalPfos)) << "%)" << std::endl;
+    std::cout << "    Average purity     : " << (100 * (summedPurity / (double) totalAmbiguousPfos)) << "%" << std::endl;
 
 }
 
