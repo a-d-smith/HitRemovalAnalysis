@@ -2,8 +2,8 @@
 #include <iomanip>
 #include <numeric>
 
-#include "../SimpleObjects/SimpleObjects.h"
-#include "../SimpleObjects/SimpleObjectHelper.h"
+#include "../../SimpleObjects/SimpleObjects.h"
+#include "../../SimpleObjects/SimpleObjectHelper.h"
 
 void makeNtuples(const char *filePath){
     // Load the data

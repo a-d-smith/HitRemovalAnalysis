@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "../SimpleObjects/SimpleObjects.h"
+#include "../../SimpleObjects/SimpleObjects.h"
 
 int min(int a, int b){
     return ((a < b) ? a : b);
