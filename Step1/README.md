@@ -68,6 +68,7 @@ Example settings files can be found in the `Settings` directory, but you must en
 ### Generating settings files using the examples
 
 There is a helper script called `GetSettings.sh` which takes the following arguments
+
 1. pre / post  - if this should be settings for a pre or post .pndr file
 2. input file  - path to the input .pndr file
 3. file id     - integer corresponding to the ID of that file
@@ -76,6 +77,7 @@ There is a helper script called `GetSettings.sh` which takes the following argum
 ### Running the code
 
 There is a helper script called `SubmitJob.sh` which takes the following arguments
+
 1. Settings xml files       - path to the settings file (see previous section)
 2. Number of events         - number of events to process in the .pndr file
 3. Output directory         - path to a directory to store the output (file name will be automatically generated based on ID in settings)
@@ -88,6 +90,7 @@ There is a helper script called `SubmitJob.sh` which takes the following argumen
 ## Running this code automatically
 
 There is a helper script called `SubmitBatch.sh` which will use condor to submit multiple jobs simultaneously, it takes the following arguments
+
 1. pre file event list      - path to a list of pre .pndr files and the number of events to process in each.
 2. post file event list     -
     - The files indicated in arguments 1 & 2 should have a line per file, and each line should have the following format (space delimited two column text file)
