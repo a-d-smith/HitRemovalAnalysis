@@ -17,4 +17,22 @@ Then still inside root run the code by calling the function `Merge`. This functi
 - `const string outputFileName` A file name for your output (.root)
 - `int nGoodEvents` Number of events to process (a good events is one that contains at least one neutrino hit)
 
+### Using a helper script
+There is a helper script called `RunJob.sh` that takes the following arguments
+1. Pre file  - path to the output pre .root file from stage 1
+2. Post file - path to the output post .root file from stage 1
+3. Output file (include .root) - path of the merged output
+4. Root setup script - path to a script which enables the use of ROOT
+5. Number of good events (at least one neutrino hit) - Optional
+
+----------------------------------------------------------------------------------------------------
+
+## Running the code using condor
+
+There is a helper script called `RunBatch.sh` that takes the following arguments
+1. Pre file regex (use quotes) - a regular expression (in " ") for the pre files from stage 1
+2. Post file regex (use quotes) - a regular expression (in " ") for the pre files from stage 2
+3. Results directory - path of the merged ouput directory
+4. ROOT setup script - path to a script which enables the use of ROOT
+
 

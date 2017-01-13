@@ -92,7 +92,7 @@ There is a helper script called `SubmitJob.sh` which takes the following argumen
 There is a helper script called `SubmitBatch.sh` which will use condor to submit multiple jobs simultaneously, it takes the following arguments
 
 1. pre file event list      - path to a list of pre .pndr files and the number of events to process in each.
-2. post file event list     -
+2. post file event list     - path to a list of post .pndr files and the number of events to process in each.
     - The files indicated in arguments 1 & 2 should have a line per file, and each line should have the following format (space delimited two column text file)
     ```
     <path to .pndr file> <number of events>
