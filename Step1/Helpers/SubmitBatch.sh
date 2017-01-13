@@ -76,6 +76,6 @@ echo "queue filename matching files *.sh" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
 
 PWD_DIR=`pwd`
 cd ${OUTPUT_DIR}/Scripts
-#condor_submit JobSubmitter
+condor_submit JobSubmitter
 cd $PWD_DIR
 
