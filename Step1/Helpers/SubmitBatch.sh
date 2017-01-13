@@ -60,6 +60,9 @@ while read line; do
     echo "source ${THIS_DIR}/SubmitJob.sh ${OUTPUT_DIR}/Scripts/SettingsPost-${ID}.xml $events ${OUTPUT_DIR} ${SETUP} ${BINARY}" >> ${OUTPUT_DIR}/Scripts/SubmitJobPost-${ID}.sh
 done < $2
 
+# Make all of the single job running scripts executable
+chmod u+x ${OUTPUT_DIR}/Scripts/SubmitJobP*.sh
+
 echo "executable     = \$(filename)" > ${OUTPUT_DIR}/Scripts/JobSubmitter
 echo "log            = \$(filename).log" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
 echo "requirements   = (OSTYPE == \"SLC6\") && (LoadAvg < 0.5)" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
@@ -67,10 +70,12 @@ echo "request_memory = 1024" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
 echo "rank           = memory" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
 echo "universe       = vanilla" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
 echo "input          = /dev/null" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
+echo "output         = /dev/null" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
+echo "run_as_owner   = true" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
 echo "queue filename matching files *.sh" >> ${OUTPUT_DIR}/Scripts/JobSubmitter
 
 PWD_DIR=`pwd`
 cd ${OUTPUT_DIR}/Scripts
-condor_submit JobSubmitter
+#condor_submit JobSubmitter
 cd $PWD_DIR
 
