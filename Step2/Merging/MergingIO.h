@@ -10,14 +10,14 @@
 #include <string>
 #include <vector>
 
-#include "../../SimpleObjects/SimpleObjects.h"
+#include "../../../SimpleObjects/SimpleObjects.h"
 
 int min(int a, int b){
     return ((a < b) ? a : b);
 }
 
 void showLoadingBar(int i, int tot, int width){
-    int N = min(width, std::floor(width * (((double) i) / ((double) tot))));
+    int N = min(width, (int) std::floor(width * (((double) i) / ((double) tot))));
     std::cout << "\r  |" << std::string(N, '=') << "|";
     std::fflush(stdout);
 }
@@ -101,6 +101,15 @@ void ReadNextHit(TChain *const pTChain, const unsigned int iEntry, std::vector<S
 
     int viewInt;
     pTChain->SetBranchAddress("View", &viewInt);
+
+    float x, z;
+    pTChain->SetBranchAddress("X", &x);
+    pTChain->SetBranchAddress("Z", &z);
+
+    // Read the information
+    pTChain->GetEntry(iEntry);
+    pTChain->ResetBranchAddresses();
+
     char view;
     switch (viewInt){
         case 0:
@@ -116,14 +125,6 @@ void ReadNextHit(TChain *const pTChain, const unsigned int iEntry, std::vector<S
             view = 'X';
     }
 
-    float x, z;
-    pTChain->SetBranchAddress("X", &x);
-    pTChain->SetBranchAddress("Z", &z);
-
-    // Read the information
-    pTChain->GetEntry(iEntry);
-    pTChain->ResetBranchAddresses();
-   
     // Check if this event already exists
     bool eventExists = false;
     int  eventIndex;

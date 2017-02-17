@@ -8,6 +8,6 @@ In this step we take the merged data root files from step 2, and count useful nu
 
 ```
 root -l
-.L Step3/LoadMergedData.C+
-.x Step3/makeNtuples.C("my_data_files_*.root")
+.L LoadMergedData.C+
+.x makeNtuples.C("my_data_files_*.root", <outputFileId>)
 ```

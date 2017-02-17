@@ -5,13 +5,13 @@
 #include "../../SimpleObjects/SimpleObjects.h"
 #include "../../SimpleObjects/SimpleObjectHelper.h"
 
-void makeNtuples(const char *filePath){
+void makeNtuples(const char *filePath, int outputFileId){
     // Load the data
     std::vector<SimpleMCEvent> eventList;
     LoadMergedData(filePath, eventList);
 
     // Setup the ouput file
-    TFile *f = TFile::Open(("MergedData-nTuples-" + std::to_string(eventList.size()) + ".root").c_str(), "RECREATE");
+    TFile *f = TFile::Open(("MergedData-nTuples-" + std::to_string(outputFileId) + ".root").c_str(), "RECREATE");
 
     // Raw hit data 
     // TNtuple *ntHitData = new TNtuple("HitData", "HitData", "fileId:eventId:uniqueId:view:x:z:isRemoved:type:inPfo");
