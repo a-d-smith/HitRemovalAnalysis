@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "../../../SimpleObjects/SimpleObjects.h"
+#include "../../SimpleObjects/SimpleObjects.h"
 
 int min(int a, int b){
     return ((a < b) ? a : b);
@@ -91,7 +91,7 @@ void ReadNextHit(TChain *const pTChain, const unsigned int iEntry, std::vector<S
     pTChain->SetBranchAddress("MCParticleId", &mcParticleId);
 
     if (isPreHitRemoval){
-        pTChain->SetBranchAddress("PfoId"            , &pfoId);
+        pTChain->SetBranchAddress("PfoPrimaryId"     , &pfoId);
         pTChain->SetBranchAddress("IsNeutrinoInduced", &isNeutrinoInduced);
     }
     else{
@@ -325,9 +325,16 @@ void MergeEvents(std::vector<SimpleMCEvent> &preEventList, std::vector<SimpleMCE
     for (unsigned int i=0; i<preEventList.size(); i++){
         SimpleMCEvent &preEvent  = preEventList[i];
         SimpleMCEvent postEvent  = postEventList[i];
+
+        if (preEvent.GetFileId() != postEvent.GetFileId() || preEvent.GetEventId() != postEvent.GetEventId()){
+            std::cerr << "Error: Trying to compare two events with differing IDs" << std::endl;
+            exit(1);
+        }
+
         SimpleMCEvent mergedEvent(preEvent.GetFileId(), preEvent.GetEventId());
       
         std::vector<int> remainingHitId;
+
         // Associate hits pre and post hit removal
         int hitCount = 0;
         for (SimpleCaloHit &preHit : preEvent.GetCaloHitList()){
@@ -339,12 +346,14 @@ void MergeEvents(std::vector<SimpleMCEvent> &preEventList, std::vector<SimpleMCE
                     (std::fabs(preHit.GetZ()-postHit.GetZ()) < std::numeric_limits<float>::min())  &&
                     (preHit.GetMCParticleId() == postHit.GetMCParticleId()) &&
                     (preHit.GetView()         == postHit.GetView())){
-
+    
                     hitIsRemoved = false;
                     remainingHitId.push_back(preHit.GetId().GetUid());
+    
                     break;
                 }
             }
+
             // Add the hit to the merged hit data
             SimpleCaloHit thisHit(preHit.GetId(), preHit.GetView(), preHit.GetX(), preHit.GetZ(), hitIsRemoved, preHit.GetMCParticleId(), preHit.GetPfoId(), preHit.IsNeutrinoInduced());
             mergedEvent.AddCaloHit(thisHit);
@@ -382,6 +391,8 @@ void MergeEvents(std::vector<SimpleMCEvent> &preEventList, std::vector<SimpleMCE
                 pfoIsRemoved = false;
                 totalAmbiguousPfos++;
                 summedPurity += ((double) nRemaining)/((double) pfo.GetHitList().size());
+                //std::cout << "File  Id : " << pfo.GetId().GetFileId() << std::endl;
+                //std::cout << "Event Id : " << pfo.GetId().GetEventId() << std::endl;
             }
         
             totalPfos++;

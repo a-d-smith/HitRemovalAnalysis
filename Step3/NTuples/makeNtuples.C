@@ -14,7 +14,7 @@ void makeNtuples(const char *filePath, int outputFileId){
     TFile *f = TFile::Open(("MergedData-nTuples-" + std::to_string(outputFileId) + ".root").c_str(), "RECREATE");
 
     // Raw hit data 
-    // TNtuple *ntHitData = new TNtuple("HitData", "HitData", "fileId:eventId:uniqueId:view:x:z:isRemoved:type:inPfo");
+    TNtuple *ntHitData = new TNtuple("HitData", "HitData", "fileId:eventId:uniqueId:view:x:z:isRemoved:type:inPfo:pfoId");
     // type = 0 -> Ghost
     // type = 1 -> Neutrino
     // type = 2 -> Cosmic
@@ -24,7 +24,6 @@ void makeNtuples(const char *filePath, int outputFileId){
 
     // The of hits of each type that are removed (or not) on a pfo by pfo basis
     TNtuple *ntPfoDist = new TNtuple("PfoDist", "PfoDist", "fileId:eventId:uniqueId:nNu:nCo:nGh:nNuRemoved:nCoRemoved:nGhRemoved:nNuTot:nCoTot:nGhTot");
-
 
     for (SimpleMCEvent &event : eventList){
         // ------------------------------------------------------------------
@@ -48,38 +47,47 @@ void makeNtuples(const char *filePath, int outputFileId){
             // Hits not in a pfo (free)
             if (hit.GetPfoId().GetUid() == -1){
                 if (IsGhostHit(hit, event)){
-                    // ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 0, 0); 
+                    ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 0, 0, hit.GetPfoId().GetUid()); 
                     nFreeGhostHits++;
-                    if (hit.IsRemoved()) nFreeGhostHitsRemoved++;             
+                    if (hit.IsRemoved()){
+                        nFreeGhostHitsRemoved++;
+                        std::cerr << "A free ghost hit has been removed!" << std::endl;
+                    }
                 }
                 else{
                     if (hit.IsNeutrinoInduced()){
-                        // ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 1, 0); 
+                        ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 1, 0, hit.GetPfoId().GetUid()); 
                         nFreeNeutrinoHits++;
-                        if (hit.IsRemoved()) nFreeNeutrinoHitsRemoved++;
+                        if (hit.IsRemoved()){
+                            nFreeNeutrinoHitsRemoved++;
+                            std::cerr << "A free neutrino hit has been removed!" << std::endl;
+                        }
                     }
                     else{
                         nFreeCosmicHits++;
-                        // ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 2, 0); 
-                        if (hit.IsRemoved()) nFreeCosmicHitsRemoved++;
+                        ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 2, 0, hit.GetPfoId().GetUid()); 
+                        if (hit.IsRemoved()){
+                            nFreeCosmicHitsRemoved++;
+                            std::cerr << "A free cosmic hit has been removed!" << std::endl;
+                        }
                     }
                 }
             }
             // Hits in a pfo
             else{
                 if (IsGhostHit(hit, event)){
-                    // ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 0, 1); 
+                    ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 0, 1, hit.GetPfoId().GetUid()); 
                     nGhostHits++;
                     if (hit.IsRemoved()) nGhostHitsRemoved++;
                 }
                 else{
                     if (hit.IsNeutrinoInduced()){
-                        // ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 1, 1); 
+                        ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 1, 1, hit.GetPfoId().GetUid()); 
                         nNeutrinoHits++;
                         if (hit.IsRemoved()) nNeutrinoHitsRemoved++;
                     }
                     else{
-                        // ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 2, 1); 
+                        ntHitData->Fill(hit.GetId().GetFileId(), hit.GetId().GetEventId(), hit.GetId().GetUid(), GetIntView(hit.GetView()), hit.GetX(), hit.GetZ(), (hit.IsRemoved() ? 1 : 0), 2, 1, hit.GetPfoId().GetUid()); 
                         nCosmicHits++;
                         if (hit.IsRemoved()) nCosmicHitsRemoved++;
                     }

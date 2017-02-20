@@ -11,7 +11,7 @@
 
     <!-- ALGORITHM SETTINGS -->
     <algorithm type = "LArEventReading">
-        <EventFileName>/r05/uboone/asmith/bnb_cosmic_samples/high_stats_B/bnb_cosmics/1001/cosmic2/bnb_cosmic-filtered_1001-post_removal-0.pndr</EventFileName>
+        <EventFileName>INPUT_FILE_NAME</EventFileName>
         <GeometryFileName>/r05/dune/mcproduction_v05_08_00/geometry_uboone/Geometry_MicroBooNE_mcc8_era.pndr</GeometryFileName>
         <ShouldReadEvents>true</ShouldReadEvents>
         <ShouldReadGeometry>true</ShouldReadGeometry>
@@ -37,7 +37,7 @@
     <algorithm type = "LArPostRemoval">
         <MCParticleListName>MCParticleList3D</MCParticleListName>
         <CaloHitListName>CaloHitList2D</CaloHitListName>
-        <FileId>0</FileId>
+        <FileId>FILE_ID</FileId>
     </algorithm>
 
 </pandora>

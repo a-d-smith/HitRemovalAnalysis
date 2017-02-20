@@ -71,6 +71,10 @@ void ReadNextHit(TChain *const pTChain, const unsigned int iEntry, std::vector<S
     // Make the hit and add it to the event
     SimpleCaloHit thisHit(Identifier(fileId, eventId, uniqueId), view, x, z, isRemoved, Identifier(fileId, eventId, mcParticleId), Identifier(fileId, eventId, pfoId), isNeutrinoInduced);
     thisEvent.AddCaloHit(thisHit);
+
+    if (thisHit.IsRemoved() && thisHit.GetPfoId().GetUid() == -1){
+        std::cout << "A hit not associated with a PFO was removed!" << std::endl;
+    }
 }
 
 

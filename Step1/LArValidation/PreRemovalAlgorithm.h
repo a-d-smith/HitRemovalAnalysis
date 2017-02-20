@@ -3,7 +3,7 @@
 
 #include "Pandora/Algorithm.h"
 
-#include "larpandoracontent/LArMonitoring/EventValidationAlgorithm.h"
+//#include "larpandoracontent/LArMonitoring/EventValidationAlgorithm.h"
 
 #ifndef MONITORING
 #include "PandoraMonitoringApi.h"
