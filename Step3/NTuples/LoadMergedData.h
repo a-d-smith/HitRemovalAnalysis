@@ -68,6 +68,7 @@ void ReadNextHit(TChain *const pTChain, const unsigned int iEntry, std::vector<S
     }
     SimpleMCEvent &thisEvent = mcEventList[eventIndex];
 
+
     // Make the hit and add it to the event
     SimpleCaloHit thisHit(Identifier(fileId, eventId, uniqueId), view, x, z, isRemoved, Identifier(fileId, eventId, mcParticleId), Identifier(fileId, eventId, pfoId), isNeutrinoInduced);
     thisEvent.AddCaloHit(thisHit);
@@ -143,7 +144,7 @@ void ReadNextPfo(TChain *const pTChain, const unsigned int iEntry, std::vector<S
  */
 void ReadNextMCParticle(TChain *const pTChain, const unsigned int iEntry, std::vector<SimpleMCEvent> & mcEventList){
     // Get the hit information
-    int fileId, eventId, uniqueId, pdg;
+    int fileId, eventId, uniqueId, pdg, primaryVisibleNeutrinoUid;
     bool isNeutrinoInduced;
     std::vector<int> *hitUidList(NULL);
     pTChain->SetBranchAddress("FileId"           , &fileId);
@@ -152,6 +153,7 @@ void ReadNextMCParticle(TChain *const pTChain, const unsigned int iEntry, std::v
     pTChain->SetBranchAddress("PdgCode"          , &pdg);
     pTChain->SetBranchAddress("IsNeutrinoInduced", &isNeutrinoInduced);
     pTChain->SetBranchAddress("HitList"          , &hitUidList);
+    pTChain->SetBranchAddress("PrimaryVisibleNeutrinoUid", &primaryVisibleNeutrinoUid);
 
     double startX, startY, startZ;
     double endX, endY, endZ;
@@ -190,7 +192,7 @@ void ReadNextMCParticle(TChain *const pTChain, const unsigned int iEntry, std::v
     } 
 
     // Make the hit and add it to the event
-    SimpleMCParticle thisMCParticle(Identifier(fileId, eventId, uniqueId), pdg, isNeutrinoInduced, hitList, startX, startY, startZ, endX, endY, endZ);
+    SimpleMCParticle thisMCParticle(Identifier(fileId, eventId, uniqueId), pdg, isNeutrinoInduced, hitList, startX, startY, startZ, endX, endY, endZ, Identifier(fileId, eventId, primaryVisibleNeutrinoUid));
     thisEvent.AddMCParticle(thisMCParticle);
 
 }

@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "../../SimpleObjects/SimpleObjects.h"
 
@@ -224,7 +225,7 @@ void ReadNextPfo(TChain *const pTChain, const unsigned int iEntry, std::vector<S
  *  @param  iEntry the first chain entry to read
  *  @param  mcEventList the event list to be populated
  */
-void ReadNextMCParticle(TChain *const pTChain, const unsigned int iEntry, std::vector<SimpleMCEvent> & mcEventList, std::vector<SimpleMCEvent> & goodEventList){
+void ReadNextMCParticle(TChain *const pTChain, const unsigned int iEntry, std::vector<SimpleMCEvent> & mcEventList, std::vector<SimpleMCEvent> & goodEventList, bool isPreHitRemoval){
     // Check if the event is good
     int fileIdTest, eventIdTest;
     pTChain->SetBranchAddress("FileId"           , &fileIdTest);
@@ -242,7 +243,7 @@ void ReadNextMCParticle(TChain *const pTChain, const unsigned int iEntry, std::v
     // ------------------------------------
     
     // Get the MCParticle information
-    int fileId, eventId, uniqueId, pdg, neutrinoInduced;
+    int fileId, eventId, uniqueId, pdg, neutrinoInduced, primaryVisibleNeutrinoUid;
     std::vector<int> *hitUidList(NULL);
     pTChain->SetBranchAddress("FileId"           , &fileId);
     pTChain->SetBranchAddress("EventId"          , &eventId);
@@ -250,6 +251,13 @@ void ReadNextMCParticle(TChain *const pTChain, const unsigned int iEntry, std::v
     pTChain->SetBranchAddress("PdgCode"          , &pdg);
     pTChain->SetBranchAddress("IsNeutrinoInduced", &neutrinoInduced);
     pTChain->SetBranchAddress("HitUidList"       , &hitUidList);
+
+    if (isPreHitRemoval){
+        pTChain->SetBranchAddress("PrimaryVisibleNeutrinoUid"         , &primaryVisibleNeutrinoUid);
+    }
+    else{
+        primaryVisibleNeutrinoUid = -1;
+    }
 
     float startX, startY, startZ;
     float endX, endY, endZ;
@@ -290,7 +298,7 @@ void ReadNextMCParticle(TChain *const pTChain, const unsigned int iEntry, std::v
     } 
 
     // Make the particle and add it to the event
-    SimpleMCParticle thisMCParticle(Identifier(fileId, eventId, uniqueId), pdg, isNeutrinoInduced, hitList, startX, startY, startZ, endX, endY, endZ);
+    SimpleMCParticle thisMCParticle(Identifier(fileId, eventId, uniqueId), pdg, isNeutrinoInduced, hitList, startX, startY, startZ, endX, endY, endZ, Identifier(fileId, eventId, primaryVisibleNeutrinoUid));
     thisEvent.AddMCParticle(thisMCParticle);
 
 }
@@ -406,7 +414,7 @@ void MergeEvents(std::vector<SimpleMCEvent> &preEventList, std::vector<SimpleMCE
 
         // Add the MCParticles
         for (SimpleMCParticle &part : preEvent.GetMCParticleList()){
-            SimpleMCParticle thisMCParticle(part.GetId(), part.GetPdg(), part.IsNeutrinoInduced(), part.GetHitList(), part.GetStartX(), part.GetStartY(), part.GetStartZ(), part.GetEndX(), part.GetEndY(), part.GetEndZ());
+            SimpleMCParticle thisMCParticle(part.GetId(), part.GetPdg(), part.IsNeutrinoInduced(), part.GetHitList(), part.GetStartX(), part.GetStartY(), part.GetStartZ(), part.GetEndX(), part.GetEndY(), part.GetEndZ(), part.GetPrimaryVisibleNeutrinoId());
             mergedEvent.AddMCParticle(thisMCParticle);
         } 
 

@@ -18,10 +18,8 @@ void LoadMergedData(const std::string &regex, std::vector<SimpleMCEvent> &eventL
     TChain *chainPfo = new TChain("HitDataPfo", "chainPfo");
     chainPfo->Add(regex.c_str());
 
-    /*
     TChain *chainMCParticle = new TChain("HitDataMCParticle", "chainMCParticle");
     chainMCParticle->Add(regex.c_str());
-    */
 
     // Read in the data 
     std::cout << "Reading ... " << std::endl;
@@ -41,7 +39,6 @@ void LoadMergedData(const std::string &regex, std::vector<SimpleMCEvent> &eventL
     }
     std::cout << std::endl;
 
-    /*
     std::cout <<   "  |------------------------------|";
     std::cout << "\r  | Reading MCParticles " << std::endl;
     for (int i=0; i<chainMCParticle->GetEntries(); i++) {
@@ -49,5 +46,4 @@ void LoadMergedData(const std::string &regex, std::vector<SimpleMCEvent> &eventL
         showLoadingBar(i+1, chainMCParticle->GetEntries(), 30);
     }
     std::cout << std::endl;
-    */
 }

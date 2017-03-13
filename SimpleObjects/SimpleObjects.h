@@ -29,7 +29,7 @@ class Identifier {
         /**
          * @brief Copy assignment operator
          */
-        Identifier& operator=(Identifier id);
+        Identifier & operator=(const Identifier & id);
 
         /**
          * @breif Default Destructor
@@ -58,10 +58,12 @@ class Identifier {
 
 // -------------------------------------------------------------
 
-Identifier& Identifier::operator=(Identifier id){
-    std::swap(m_fileId , id.m_fileId);
-    std::swap(m_eventId, id.m_fileId);
-    std::swap(m_uid    , id.m_fileId);
+Identifier & Identifier::operator=(const Identifier & id){
+    if (this != &id ){
+        m_fileId = id.m_fileId;
+        m_eventId = id.m_eventId;
+        m_uid = id.m_uid;
+    }
     return *this;
 }
 
@@ -135,6 +137,9 @@ class SimpleCaloHit{
          */
         ~SimpleCaloHit() {}
 
+        // Assignment operator
+        SimpleCaloHit & operator=( const SimpleCaloHit & other); 
+
         // Getters
         Identifier GetId()             const;
         char       GetView()           const;
@@ -158,8 +163,24 @@ class SimpleCaloHit{
         bool operator==(const SimpleCaloHit &other);
         friend bool operator== ( const SimpleCaloHit &n1, const SimpleCaloHit &n2);
 
+
 };
 // -------------------------------------------------------------
+
+// Assignment operator
+SimpleCaloHit & SimpleCaloHit::operator=( const SimpleCaloHit & other) {
+    if (this != &other){
+        m_id = other.m_id;
+        m_view = other.m_view;
+        m_x = other.m_x;
+        m_z = other.m_z;
+        m_isRemoved = other.m_isRemoved;
+        m_isNeutrinoInduced = other.m_isNeutrinoInduced;
+        m_mcParticleId = other.m_mcParticleId;
+        m_pfoId = other.m_pfoId;
+    }
+    return *this;
+}
 
 // Getters
 Identifier SimpleCaloHit::GetId()             const { return m_id;               }
@@ -255,6 +276,7 @@ void SimplePfo::SetRemoved(bool isRemoved) { m_isRemoved = isRemoved; }
 class SimpleMCParticle{
     protected:
         Identifier              m_id;
+        Identifier              m_primaryVisibleNeutrinoId;
         int                     m_pdg;
         bool                    m_isNeutrinoInduced;
         std::vector<Identifier> m_hitList;
@@ -289,15 +311,36 @@ class SimpleMCParticle{
                              m_startZ(startZ)                       , 
                              m_endX(endX)                           , 
                              m_endY(endY)                           , 
-                             m_endZ(endZ)                           {}
+                             m_endZ(endZ)                           ,
+                             m_primaryVisibleNeutrinoId(Identifier(id.GetFileId(), id.GetEventId(), -1)) {}
+
+        /**
+         * @breif Parametrised Constructor accepting primary visible neutrino id
+         */
+        SimpleMCParticle(Identifier id, int pdg, bool isNeutrinoInduced, std::vector<Identifier> hitList, double startX, double startY, double startZ, double endX, double endY, double endZ, Identifier primaryVisibleNeutrinoId) : 
+                             m_id(id)                               ,
+                             m_pdg(pdg)                             , 
+                             m_isNeutrinoInduced(isNeutrinoInduced) , 
+                             m_hitList(hitList)                     ,
+                             m_startX(startX)                       ,
+                             m_startY(startY)                       ,
+                             m_startZ(startZ)                       , 
+                             m_endX(endX)                           , 
+                             m_endY(endY)                           , 
+                             m_endZ(endZ)                           ,
+                             m_primaryVisibleNeutrinoId(primaryVisibleNeutrinoId) {}
 
         /**
          * @breif Destructor
          */
         ~SimpleMCParticle() {}
 
+        // Assignment operator
+        SimpleMCParticle & operator=( const SimpleMCParticle & other); 
+
         // Getters 
         Identifier               GetId()             const;
+        Identifier               GetPrimaryVisibleNeutrinoId() const;
         int                      GetPdg()            const;
         bool                     IsNeutrinoInduced() const;
         std::vector<Identifier>& GetHitList();
@@ -310,8 +353,27 @@ class SimpleMCParticle{
         
 };
 
+// Assignment operator
+SimpleMCParticle & SimpleMCParticle::operator=( const SimpleMCParticle & other) {
+    if (this != &other){
+        m_id = other.m_id;
+        m_primaryVisibleNeutrinoId = other.m_primaryVisibleNeutrinoId;
+        m_pdg = other.m_pdg;
+        m_isNeutrinoInduced = other.m_isNeutrinoInduced;
+        m_hitList = other.m_hitList;
+        m_startX = other.m_startX;
+        m_startY = other.m_startY;
+        m_startZ = other.m_startZ;
+        m_endX = other.m_endX;
+        m_endY = other.m_endY;
+        m_endZ = other.m_endZ;
+    }
+    return *this;
+}
+
 // Getters
 Identifier                SimpleMCParticle::GetId()             const { return m_id;                }
+Identifier                SimpleMCParticle::GetPrimaryVisibleNeutrinoId() const { return m_primaryVisibleNeutrinoId; }
 int                       SimpleMCParticle::GetPdg()            const { return m_pdg;               }
 bool                      SimpleMCParticle::IsNeutrinoInduced() const { return m_isNeutrinoInduced; }
 std::vector<Identifier> & SimpleMCParticle::GetHitList()              { return m_hitList;           }
