@@ -243,6 +243,7 @@ StatusCode PreRemovalAlgorithm::Run()
         
         // Get the Uid for the associated particle
         size_t mcParticleUid = -1;
+        size_t mcPrimaryUid  = -1;
         bool isNeutrinoInduced = false;
         if (mcParticle){
             // An associated MCParticle exists -> Not a ghost hit
@@ -250,6 +251,14 @@ StatusCode PreRemovalAlgorithm::Run()
 
             if (LArMCParticleHelper::IsNeutrinoInduced(mcParticle)){
                 isNeutrinoInduced = true;
+            }
+
+            // Find the associated primary MC particle 
+            if (LArMCParticleHelper::IsPrimary(mcParticle)){
+                mcPrimaryUid = mcParticleUid;
+            }
+            else{
+                mcPrimaryUid = (size_t) (LArMCParticleHelper::GetPrimaryMCParticle(mcParticle)->GetUid());
             }
         }
         hitParticleMap.insert(std::pair<size_t, size_t>(uid, mcParticleUid));
@@ -262,6 +271,7 @@ StatusCode PreRemovalAlgorithm::Run()
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputHitTreeName.c_str(), "UniqueId"         , (int) uid));
         // Associated particle / pfo
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputHitTreeName.c_str(), "MCParticleId"     , (int) mcParticleUid));
+        PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputHitTreeName.c_str(), "MCPrimaryId"      , (int) mcPrimaryUid));
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputHitTreeName.c_str(), "IsNeutrinoInduced", (isNeutrinoInduced ? 1 : 0)));
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputHitTreeName.c_str(), "PfoId"            , (hitPfoMap.count(uid)==1 ? ((int) hitPfoMap.at(uid)) : -1) ));
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputHitTreeName.c_str(), "PfoPrimaryId"     , (hitPfoPrimaryMap.count(uid)==1 ? ((int) hitPfoPrimaryMap.at(uid)) : -1) ));
@@ -273,6 +283,8 @@ StatusCode PreRemovalAlgorithm::Run()
         PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_outputHitTreeName.c_str()));
     
     }
+
+    std::cout << "Done Hits" << std::endl;
 
     // Get a list of all of the MCParticles 
     for (const MCParticle *const &pMCParticle : *pMCParticleList){
@@ -288,17 +300,6 @@ StatusCode PreRemovalAlgorithm::Run()
         // PDG code
         int pdg = pMCParticle->GetParticleId();
 
-        /*
-        // Uid of the primary particle
-        size_t primaryUid;
-        if (LArMCParticleHelper::IsPrimary(pMCParticle)){
-            primaryUid = uid;
-        }
-        else{
-            primaryUid = (size_t) (LArMCParticleHelper::GetPrimaryMCParticle(pMCParticle)->GetUid());
-        }
-        */
-
         // List of associated Hits
         std::vector<int> *MCParticleHitList = new std::vector<int>;
         std::map<size_t, size_t>::iterator itMC;
@@ -307,6 +308,22 @@ StatusCode PreRemovalAlgorithm::Run()
                 MCParticleHitList->push_back((int) (itMC->first));
             }
         }
+
+
+        // Use -1 for any invisible and/or cosmic MCParticle
+        size_t primaryUid = -1;
+        if (isNeutrinoInduced) {
+            if (LArMCParticleHelper::IsVisible(pMCParticle)){
+                // Uid of the primary particle
+                if (LArMCParticleHelper::IsPrimary(pMCParticle)){
+                    primaryUid = uid;
+                }
+                else{
+                    primaryUid = (size_t) (LArMCParticleHelper::GetPrimaryMCParticle(pMCParticle)->GetUid());
+                }
+            }
+        }
+
 
         // Start position
         const CartesianVector StartVtx = pMCParticle->GetVertex();
@@ -330,7 +347,7 @@ StatusCode PreRemovalAlgorithm::Run()
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputMCParticleTreeName.c_str(), "PdgCode"          , pdg));
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputMCParticleTreeName.c_str(), "IsNeutrinoInduced", (isNeutrinoInduced ? 1 : 0)));
         // Associated Primary Uid
-        // PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputMCParticleTreeName.c_str(), "PrimaryUid"       , (int) primaryUid));
+        PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputMCParticleTreeName.c_str(), "PrimaryVisibleNeutrinoUid", (int) primaryUid));
         // Associated Hit List
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputMCParticleTreeName.c_str(), "HitUidList"       , MCParticleHitList));
         // Positional information
@@ -342,7 +359,7 @@ StatusCode PreRemovalAlgorithm::Run()
         PANDORA_MONITORING_API(SetTreeVariable(this->GetPandora(), m_outputMCParticleTreeName.c_str(), "EndZ"             , endZ));
 
         PANDORA_MONITORING_API(FillTree(this->GetPandora(), m_outputMCParticleTreeName.c_str()));
-
+        
         delete MCParticleHitList;
     }
 
